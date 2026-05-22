@@ -85,18 +85,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns_link" {
   depends_on            = [azurerm_virtual_network.vnet]
 }
 
-resource "azurerm_policy_assignment" "policy" {
-  for_each = { for item in var.policy_assignments : item.name => item }
-
-  name                 = each.value.name
-  display_name         = each.value.display_name
-  scope                = length(each.value.scope) > 0 ? each.value.scope : local.resource_group_id
-  policy_definition_id = each.value.policy_definition_id
-  description          = each.value.description
-  not_scopes           = each.value.not_scopes
-  parameters           = length(each.value.parameters) > 0 ? each.value.parameters : null
-}
-
 resource "azurerm_log_analytics_workspace" "law" {
   count               = var.enable_log_analytics ? 1 : 0
   name                = local.log_analytics_workspace_name

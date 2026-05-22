@@ -88,20 +88,6 @@ variable "private_dns_zones" {
   default     = []
 }
 
-variable "policy_assignments" {
-  type = list(object({
-    name                 = string
-    display_name         = string
-    policy_definition_id = string
-    scope                = optional(string, "")
-    description          = optional(string, "")
-    not_scopes           = optional(list(string), [])
-    parameters           = optional(map(any), {})
-  }))
-  description = "Policy assignments to apply for landing zone governance."
-  default     = []
-}
-
 variable "enable_log_analytics" {
   type        = bool
   description = "Whether to create a Log Analytics workspace for baseline monitoring."

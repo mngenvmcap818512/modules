@@ -28,11 +28,6 @@ output "private_dns_zone_ids" {
   description = "IDs of the landing zone private DNS zones."
 }
 
-output "policy_assignment_ids" {
-  value       = { for p in azurerm_policy_assignment.policy : p.name => p.id }
-  description = "IDs of the landing zone policy assignments."
-}
-
 output "log_analytics_workspace_id" {
   value       = try(azurerm_log_analytics_workspace.law[0].id, "")
   description = "ID of the created Log Analytics workspace, if enabled."

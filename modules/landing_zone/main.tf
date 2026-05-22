@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   name                = local.vnet_name
   location            = var.location
-  resource_group_name = local.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   address_space       = var.address_space
   tags                = var.tags
 }
@@ -25,7 +25,7 @@ resource "azurerm_network_security_group" "nsg" {
 
   name                = each.value.name
   location            = var.location
-  resource_group_name = local.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   tags                = var.tags
 
   dynamic "security_rule" {
@@ -89,7 +89,7 @@ resource "azurerm_log_analytics_workspace" "law" {
   count               = var.enable_log_analytics ? 1 : 0
   name                = local.log_analytics_workspace_name
   location            = var.location
-  resource_group_name = local.resource_group_name
+  resource_group_name = azurerm_resource_group.rg.name
   sku                 = var.log_analytics_sku
   retention_in_days   = var.log_analytics_retention_in_days
   tags                = var.tags

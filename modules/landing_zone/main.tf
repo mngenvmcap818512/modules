@@ -15,9 +15,13 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_virtual_network" "vnet" {
   name                = local.vnet_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = local.resource_group_name
   address_space       = var.address_space
   tags                = var.tags
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_network_security_group" "nsg" {
@@ -25,7 +29,7 @@ resource "azurerm_network_security_group" "nsg" {
 
   name                = each.value.name
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = local.resource_group_name
   tags                = var.tags
 
   dynamic "security_rule" {
@@ -43,6 +47,11 @@ resource "azurerm_network_security_group" "nsg" {
       description                = security_rule.value.description
     }
   }
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
+
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -65,6 +74,11 @@ resource "azurerm_subnet" "subnet" {
       }
     }
   }
+  
+    depends_on = [
+    azurerm_virtual_network.vnet
+  ]
+  
 }
 
 resource "azurerm_private_dns_zone" "private_dns_zone" {
@@ -73,6 +87,10 @@ resource "azurerm_private_dns_zone" "private_dns_zone" {
   name                = each.key
   resource_group_name = local.resource_group_name
   tags                = var.tags
+
+    depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "dns_link" {
@@ -85,12 +103,17 @@ resource "azurerm_private_dns_zone_virtual_network_link" "dns_link" {
   depends_on            = [azurerm_virtual_network.vnet]
 }
 
+
 resource "azurerm_log_analytics_workspace" "law" {
   count               = var.enable_log_analytics ? 1 : 0
   name                = local.log_analytics_workspace_name
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
+  resource_group_name = local.resource_group_name
   sku                 = var.log_analytics_sku
   retention_in_days   = var.log_analytics_retention_in_days
   tags                = var.tags
+
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
 }
